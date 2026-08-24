@@ -1,0 +1,9 @@
+[project]
+name = "npc-rl-mlops"
+version = "0.1.0"
+description = "DQN agent for a small GridWorld with a FastAPI inference API"
+requires-python = ">=3.10,<3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
