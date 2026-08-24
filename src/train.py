@@ -12,7 +12,14 @@ from .environment import NPCGridWorld
 from .model import DQN, encode_observation
 
 
-def train(episodes: int = 2000, seed: int = 42, output: str = "artifacts/npc_dqn.pt"):
+def train(
+    episodes: int = 2000,
+    seed: int = 42,
+    output: str = "artifacts/npc_dqn.pt",
+    algorithm: str = "double_dqn",
+):
+    if algorithm not in {"dqn", "double_dqn"}:
+        raise ValueError("algorithm must be 'dqn' or 'double_dqn'")
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -52,10 +59,14 @@ def train(episodes: int = 2000, seed: int = 42, output: str = "artifacts/npc_dqn
                 next_states = torch.tensor(np.array([x[3] for x in batch]), dtype=torch.float32)
                 dones = torch.tensor([x[4] for x in batch], dtype=torch.float32)
                 current = policy(states).gather(1, actions).squeeze(1)
-                
                 with torch.no_grad():
-                    next_actions = policy(next_states).argmax(1, keepdim=True)
-                    next_values = target(next_states).gather(1, next_actions).squeeze(1)
+                    if algorithm == "double_dqn":
+                        # Double DQN separates action selection from evaluation.
+                        next_actions = policy(next_states).argmax(1, keepdim=True)
+                        next_values = target(next_states).gather(1, next_actions).squeeze(1)
+                    else:
+                        # Classical DQN selects and evaluates with the target network.
+                        next_values = target(next_states).max(1).values
                     expected = rewards + gamma * next_values * (1 - dones)
                 loss = loss_fn(current, expected)
                 optimizer.zero_grad()
@@ -78,5 +89,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--episodes", type=int, default=2000)
     parser.add_argument("--output", default="artifacts/npc_dqn.pt")
+    parser.add_argument("--algorithm", choices=["dqn", "double_dqn"], default="double_dqn")
     args = parser.parse_args()
-    train(args.episodes, output=args.output)
+    train(args.episodes, output=args.output, algorithm=args.algorithm)

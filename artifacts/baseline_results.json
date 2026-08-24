@@ -1,0 +1,17 @@
+{
+  "random": {
+    "episodes": 500,
+    "success_rate": 0.404,
+    "mean_reward": -2.2937999999999996
+  },
+  "dqn": {
+    "episodes": 500,
+    "success_rate": 0.948,
+    "mean_reward": 9.283
+  },
+  "double_dqn": {
+    "episodes": 500,
+    "success_rate": 0.954,
+    "mean_reward": 9.312599999999998
+  }
+}

@@ -1,4 +1,4 @@
-# NPC Double DQN API
+# NPC RL MLOps
 
 Projet personnel autour du comportement d'un NPC dans un petit GridWorld. Un Double DQN apprend à atteindre une cible en évitant un obstacle. L'état utilise les positions relatives de la cible et de l'obstacle afin de mieux généraliser aux placements aléatoires. Le modèle entraîné peut ensuite être évalué et exposé par une API FastAPI.
 
@@ -30,22 +30,21 @@ L'entraînement crée `artifacts/npc_dqn.pt`. Un modèle issu de l'ancienne repr
 
 Endpoints : `/health`, `/predict`, `/metrics`. Les résultats d'entraînement ne sont pas inclus dans ce dépôt : ils doivent être mesurés lors d'une exécution réelle.
 
-## Résultats
+## Résultats mesurés et baselines
 
-Le modèle a été entraîné pendant 2 000 épisodes puis évalué, sans exploration, sur 500 configurations générées avec des graines différentes de celles de l'entraînement.
+Les trois politiques ont été évaluées sur les mêmes 500 épisodes (graines 10 000 à 10 499). Le DQN classique et le Double DQN ont chacun été entraînés pendant 2 000 épisodes avec la graine 42.
 
-| Mesure | Résultat |
-|---|---:|
-| Taux de réussite | 95,4 % |
-| Récompense moyenne | 9,31 |
-| Épisodes d'évaluation | 500 |
+| Politique | Taux de réussite | Récompense moyenne |
+| --- | ---: | ---: |
+| Aléatoire | 40,4 % | -2,29 |
+| DQN classique | 94,8 % | 9,28 |
+| Double DQN | 95,4 % | 9,31 |
 
-Une première version fondée sur les positions absolues atteignait 69,6 % de réussite. L'utilisation de positions relatives, d'un Double DQN, d'un réseau cible périodique et d'un signal de progression a porté le taux à 95,4 %. Ce résultat concerne uniquement cet environnement de taille 5 × 5 et ne constitue pas une comparaison avec d'autres algorithmes.
+Le Double DQN gagne **55 points de pourcentage** face à la politique aléatoire. Son avantage sur le DQN classique est limité à **0,6 point** dans ce protocole ; il ne constitue donc pas, à lui seul, une preuve de supériorité générale.
 
-## Limites
+Pour reproduire la comparaison :
 
-- environnement volontairement simple, avec une cible et un obstacle ;
-- entraînement et inférence sur CPU ;
-- absence de comparaison expérimentale avec PPO ou une politique aléatoire ;
-- configuration cloud présente comme base de travail, mais aucun déploiement AWS n'est revendiqué.
-
+~~~powershell
+.\.venv\Scripts\python.exe -m src.train --episodes 2000 --algorithm dqn --output artifacts/npc_classic_dqn.pt
+.\.venv\Scripts\python.exe -m src.compare_baselines --episodes 500
+~~~
