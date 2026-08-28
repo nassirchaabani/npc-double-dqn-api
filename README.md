@@ -1,5 +1,9 @@
 # NPC RL MLOps
 
+[![Tests](https://github.com/nassirchaabani/npc-double-dqn-api/actions/workflows/ci.yml/badge.svg)](https://github.com/nassirchaabani/npc-double-dqn-api/actions/workflows/ci.yml)
+[![Python 3.10](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Projet personnel autour du comportement d'un NPC dans un petit GridWorld. Un Double DQN apprend à atteindre une cible en évitant un obstacle. L'état utilise les positions relatives de la cible et de l'obstacle afin de mieux généraliser aux placements aléatoires. Le modèle entraîné peut ensuite être évalué et exposé par une API FastAPI.
 
 ## Prérequis
